@@ -198,11 +198,15 @@ unsafe extern "C" fn qingke_setup_interrupts() {
 
     // Qingke V2's mtvec must be 1KB aligned.
 
+    extern "C" {
+        static _start: usize;
+    }
+
     #[cfg(feature = "highcode")]
-    mtvec::write(0x20000000, TrapMode::VectoredAddress);
+    mtvec::write(&raw const _start as usize, TrapMode::VectoredAddress);
 
     #[cfg(not(feature = "highcode"))]
-    mtvec::write(0x00000000, TrapMode::VectoredAddress);
+    mtvec::write(&raw const _start as usize, TrapMode::VectoredAddress);
 
     qingke::pfic::wfi_to_wfe(true);
 }
